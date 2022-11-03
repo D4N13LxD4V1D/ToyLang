@@ -1,5 +1,7 @@
 #include "Compiler.hpp"
 
+#include <sstream>
+
 std::unique_ptr<llvm::LLVMContext> Compiler::TheContext =
     std::make_unique<llvm::LLVMContext>();
 std::unique_ptr<llvm::Module> Compiler::TheModule =
@@ -22,6 +24,53 @@ llvm::Value *Compiler::visit(BinaryExpr<llvm::Value *> &expr) {
     if (L == nullptr || R == nullptr) {
         return nullptr;
     }
+
+    if (L->getType()->getTypeID() == llvm::Type::ArrayTyID) {
+        std::string str1 =
+            cast<llvm::ConstantDataArray>(L)->getAsString().str();
+        str1.pop_back();
+
+        if (R->getType()->getTypeID() == llvm::Type::ArrayTyID) {
+            auto str2 = cast<llvm::ConstantDataArray>(R)->getAsString().str();
+            str2.pop_back();
+            return llvm::ConstantDataArray::getString(*TheContext, str1 + str2);
+        } else if (R->getType()->getTypeID() == llvm::Type::DoubleTyID) {
+            std::stringstream ss;
+            ss << str1
+               << cast<llvm::ConstantFP>(R)->getValueAPF().convertToDouble();
+            return llvm::ConstantDataArray::getString(*TheContext, ss.str());
+        } else if (R->getType()->getTypeID() == llvm::Type::IntegerTyID) {
+            std::stringstream ss;
+            ss << str1 << cast<llvm::ConstantInt>(R)->getSExtValue();
+            return llvm::ConstantDataArray::getString(*TheContext, ss.str());
+        } else {
+            return error(expr.op, "Invalid string concatenation.");
+        }
+    }
+
+    if (R->getType()->getTypeID() == llvm::Type::ArrayTyID) {
+        std::string str1 =
+            cast<llvm::ConstantDataArray>(R)->getAsString().str();
+        str1.pop_back();
+
+        if (L->getType()->getTypeID() == llvm::Type::ArrayTyID) {
+            auto str2 = cast<llvm::ConstantDataArray>(L)->getAsString().str();
+            str2.pop_back();
+            return llvm::ConstantDataArray::getString(*TheContext, str2 + str1);
+        } else if (L->getType()->getTypeID() == llvm::Type::DoubleTyID) {
+            std::stringstream ss;
+            ss << cast<llvm::ConstantFP>(L)->getValueAPF().convertToDouble()
+               << str1;
+            return llvm::ConstantDataArray::getString(*TheContext, ss.str());
+        } else if (L->getType()->getTypeID() == llvm::Type::IntegerTyID) {
+            std::stringstream ss;
+            ss << cast<llvm::ConstantInt>(L)->getSExtValue() << str1;
+            return llvm::ConstantDataArray::getString(*TheContext, ss.str());
+        } else {
+            return error(expr.op, "Invalid string concatenation.");
+        }
+    }
+
     switch (expr.op.type) {
     case TokenType::PLUS:
         return Builder->CreateFAdd(L, R, "addtmp");
