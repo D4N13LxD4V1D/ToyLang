@@ -1,0 +1,61 @@
+# GitIgnore for CPP
+
+# Ignore all files in the build directory
+
+build/
+
+# Ignore all files in the bin directory
+
+bin/
+
+# Ignore all files in the lib directory
+
+lib/
+
+# Ignore all files in the .vs directory
+
+.vs/
+
+# Ignore all files in the .vscode directory
+
+.vscode/
+
+# Ignore all files in the .idea directory
+
+.idea/
+
+# Ignore all files in the .cproject directory
+
+.cproject
+
+# Ignore all files in the .project directory
+
+.project
+
+# Ignore all files in the .settings directory
+
+.settings/
+
+# Ignore all files in the .sln directory
+
+.sln
+
+# Ignore all files in the .suo directory
+
+.suo
+
+# Ignore all files in the .user directory
+
+.user
+
+# Ignore all files in the .vcxproj directory
+
+.vcxproj
+
+# Ignore all files in the .vcxproj.filters directory
+
+.vcxproj.filters
+
+# Ignore all files in the .vcxproj.user directory
+
+.vcxproj.user
