@@ -63,7 +63,7 @@ void ToyLang::run(const char *source) {
     // StringifyAST stringifier;
     // std::cout << stringifier.toString(expr) << std::endl;
 
-    Parser<llvm::Value *> parser(allTokens);
+    Parser<llvm::Value *> parser(tokens);
     auto expr = parser.parse();
 
     if (expr == nullptr)
