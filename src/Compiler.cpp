@@ -32,29 +32,15 @@ llvm::Value *Compiler::visit(BinaryExpr<llvm::Value *> &expr) {
     case TokenType::SLASH:
         return Builder->CreateFDiv(L, R, "divtmp");
     case TokenType::GREATER:
-        L = Builder->CreateFCmpUGT(L, R, "cmptmp");
-        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
-                                     "booltmp");
+        return Builder->CreateFCmpUGT(L, R, "cmptmp");
     case TokenType::GREATER_EQUAL:
-        L = Builder->CreateFCmpUGE(L, R, "cmptmp");
-        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
-                                     "booltmp");
+        return Builder->CreateFCmpUGE(L, R, "cmptmp");
     case TokenType::LESS:
-        L = Builder->CreateFCmpULT(L, R, "cmptmp");
-        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
-                                     "booltmp");
+        return Builder->CreateFCmpULT(L, R, "cmptmp");
     case TokenType::LESS_EQUAL:
-        L = Builder->CreateFCmpULE(L, R, "cmptmp");
-        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
-                                     "booltmp");
-    case TokenType::BANG_EQUAL:
-        L = Builder->CreateFCmpUNE(L, R, "cmptmp");
-        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
-                                     "booltmp");
+        return Builder->CreateFCmpULE(L, R, "cmptmp");
     case TokenType::EQUAL_EQUAL:
-        L = Builder->CreateFCmpUEQ(L, R, "cmptmp");
-        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
-                                     "booltmp");
+        return Builder->CreateFCmpUEQ(L, R, "cmptmp");
     default:
         return error(expr.op, "Invalid binary operator.");
     }
@@ -70,6 +56,19 @@ llvm::Value *Compiler::visit(LiteralExpr<llvm::Value *> &expr) {
             *TheContext, llvm::APFloat(std::stod(expr.value.lexeme)));
     }
 
+    if (expr.value.type == TokenType::TRUE) {
+        return Builder->getInt1(true);
+    }
+
+    if (expr.value.type == TokenType::FALSE) {
+        return Builder->getInt1(false);
+    }
+
+    if (expr.value.type == TokenType::STRING) {
+        return llvm::ConstantDataArray::getString(*TheContext,
+                                                  expr.value.lexeme);
+    }
+
     return error(expr.value, "Invalid literal.");
 }
 
@@ -81,6 +80,8 @@ llvm::Value *Compiler::visit(UnaryExpr<llvm::Value *> &expr) {
     switch (expr.op.type) {
     case TokenType::MINUS:
         return Builder->CreateFNeg(operand, "negtmp");
+    case TokenType::BANG:
+        return Builder->CreateNot(operand, "nottmp");
     default:
         return error(expr.op, "invalid unary operator.");
     }
