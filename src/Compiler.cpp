@@ -31,6 +31,30 @@ llvm::Value *Compiler::visit(BinaryExpr<llvm::Value *> &expr) {
         return Builder->CreateFMul(L, R, "multmp");
     case TokenType::SLASH:
         return Builder->CreateFDiv(L, R, "divtmp");
+    case TokenType::GREATER:
+        L = Builder->CreateFCmpUGT(L, R, "cmptmp");
+        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
+                                     "booltmp");
+    case TokenType::GREATER_EQUAL:
+        L = Builder->CreateFCmpUGE(L, R, "cmptmp");
+        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
+                                     "booltmp");
+    case TokenType::LESS:
+        L = Builder->CreateFCmpULT(L, R, "cmptmp");
+        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
+                                     "booltmp");
+    case TokenType::LESS_EQUAL:
+        L = Builder->CreateFCmpULE(L, R, "cmptmp");
+        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
+                                     "booltmp");
+    case TokenType::BANG_EQUAL:
+        L = Builder->CreateFCmpUNE(L, R, "cmptmp");
+        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
+                                     "booltmp");
+    case TokenType::EQUAL_EQUAL:
+        L = Builder->CreateFCmpUEQ(L, R, "cmptmp");
+        return Builder->CreateUIToFP(L, llvm::Type::getDoubleTy(*TheContext),
+                                     "booltmp");
     default:
         return error(expr.op, "Invalid binary operator.");
     }
