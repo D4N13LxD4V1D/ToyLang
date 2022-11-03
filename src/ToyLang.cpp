@@ -70,9 +70,9 @@ void ToyLang::run(const char *source) {
         return;
 
     Compiler compiler;
-    compiler.codegen(expr);
+    compiler.codegen(expr)->print(llvm::outs());
 
-    compiler.print();
+    std::cout << std::endl;
 }
 
 void ToyLang::error(int line, std::string message) {

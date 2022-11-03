@@ -32,8 +32,6 @@ class Compiler : public ExprVisitor<llvm::Value *> {
     llvm::Value *visit(GroupingExpr<llvm::Value *> &expr) override;
     llvm::Value *visit(LiteralExpr<llvm::Value *> &expr) override;
     llvm::Value *visit(UnaryExpr<llvm::Value *> &expr) override;
-
-    void print();
 };
 
 #endif

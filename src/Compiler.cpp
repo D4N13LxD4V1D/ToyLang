@@ -61,5 +61,3 @@ llvm::Value *Compiler::visit(UnaryExpr<llvm::Value *> &expr) {
         return error(expr.op, "invalid unary operator.");
     }
 }
-
-void Compiler::print() { TheModule->print(llvm::errs(), nullptr); }
