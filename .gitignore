@@ -1,5 +1,8 @@
 # GitIgnore for CPP
 
+# macOS
+.DS_Store
+
 # Ignore all files in the build directory
 
 build/
